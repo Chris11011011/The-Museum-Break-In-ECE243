@@ -8,14 +8,14 @@ The DE1-SoC is the main controller for the project: it handles game state, timin
 By: **Abby Lui & Christopher Lee**
 
 <p align="center">
-  <img src="assets/system-architecture.svg" alt="Museum Break-In system architecture" width="900">
+  <img src="assets/title-collage.jpg" alt="Museum Break-In final laser obstacle course" width="900">
 </p>
 
 ---
 
 ## Project Demo
 
-**Video:** [Chris & Abby — Final Project Demo](https://drive.google.com/file/d/1x_qFAAnGF3lfjsZumd14p-Xw97Y5nBXw/view?usp=drive_link)
+**Full demo:** [Chris & Abby — Final Project Demo (Google Drive)](https://drive.google.com/file/d/1x_qFAAnGF3lfjsZumd14p-Xw97Y5nBXw/view?usp=drive_link)
 
 ---
 
@@ -24,14 +24,14 @@ By: **Abby Lui & Christopher Lee**
 This public repository is intentionally focused on the **design, architecture, development process, and final prototype**:
 
 - `README.md` — complete project walkthrough.
-- `assets/system-architecture.svg` — public-facing system architecture diagram.
-- `assets/game-flow.svg` — gameplay and state progression diagram.
-- `assets/build-evolution.svg` — visual summary of how the project changed during development.
+- `assets/title-collage.jpg` — final project / enclosure overview.
+- `assets/high-level-overview.jpg` — original project block diagram and visualization.
+- `assets/physical-movement-collage.jpg` — mechanical design and conveyor development.
+- `assets/hardware-bridge.jpg` — final hardware integration between the enclosure and control electronics.
+- `assets/3d-printing-timelapse.mp4` — web-optimized timelapse of the custom conveyor parts being printed.
 
 > **Academic Integrity & Licensing**  
 > To comply with academic integrity and plagiarism policies at the University of Toronto, the C source code for this course project will **not** be published in this repository.
-
-The walkthrough below was prepared from the original proposal, final report, presentation material, diagrams, and build photos. Those course source files are not republished here; the public repository focuses on explaining how the finished system worked.
 
 ---
 
@@ -49,10 +49,6 @@ The objective is to:
 
 A broken security beam or a timeout immediately transitions the project into a **game-over state**, stops player movement, and changes the VGA output. Reaching the final pedestal after clearing the checkpoint produces the successful completion state.
 
-<p align="center">
-  <img src="assets/game-flow.svg" alt="Museum Break-In gameplay progression" width="900">
-</p>
-
 ---
 
 ## High-Level Architecture
@@ -62,6 +58,10 @@ At a system level, the project is split into three layers:
 1. **Physical game hardware** — enclosure, lasers, sensors, conveyor motors, fans, wiring, and pedestal.
 2. **DE1-SoC control system** — central game state, interrupts, countdown timing, motor control, and PWM.
 3. **VGA feedback** — visual state and status output for the player.
+
+<p align="center">
+  <img src="assets/high-level-overview.jpg" alt="Original Museum Break-In project block diagram and visualization" width="900">
+</p>
 
 The important design choice was keeping the **actual game logic on the DE1-SoC**. The Arduino interface converts analog photoresistor readings into signals the FPGA system can use, but movement, timing, game-state decisions, interrupt handling, and output behaviour remain on the Nios V side.
 
@@ -73,7 +73,19 @@ The original movement idea was much simpler: attach the player to a stick and mo
 
 Two TT DC motors independently control the X and Y movement axes. Custom mounts and conveyor parts were designed and 3D printed so the player could be positioned across the 2D playfield rather than following a fixed track.
 
+<p align="center">
+  <img src="assets/physical-movement-collage.jpg" alt="Conveyor system design, 3D modelling, printing, and physical build process" width="900">
+</p>
+
 This mechanical system became one of the defining parts of the project because it connected the player's physical movement directly to the board's real-time control system.
+
+### 3D-Printed Conveyor Parts
+
+A large part of the movement system depended on custom printed pieces designed around the TT motors and the physical dimensions of the enclosure.
+
+<video src="assets/3d-printing-timelapse.mp4" controls muted loop playsinline width="760"></video>
+
+[Open the 3D-printing timelapse directly](assets/3d-printing-timelapse.mp4)
 
 ---
 
@@ -189,6 +201,12 @@ Several visual concepts were explored during brainstorming before the final pres
 - Checkpoint laser control.
 - VGA output.
 
+<p align="center">
+  <img src="assets/hardware-bridge.jpg" alt="Final physical bridge between the laser enclosure, DE1-SoC, Arduino, power supply, and supporting electronics" width="900">
+</p>
+
+The final setup makes the boundary between the physical course and the control hardware especially clear: the enclosure contains the moving game and sensors, while the DE1-SoC, Arduino interface, motor driver, power distribution, and supporting wiring sit alongside it.
+
 ---
 
 ## 8. Building the Enclosure
@@ -234,10 +252,6 @@ That integration process was one of the biggest lessons from the project: once s
 ## Design Evolution
 
 Not every feature stayed exactly as it was first proposed.
-
-<p align="center">
-  <img src="assets/build-evolution.svg" alt="Museum Break-In project development timeline" width="900">
-</p>
 
 ### What changed
 
