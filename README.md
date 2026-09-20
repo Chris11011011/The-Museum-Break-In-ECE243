@@ -1,9 +1,9 @@
 # The Museum Break-In
 ## Physical Laser Obstacle Course Game (DE1-SoC / Nios V)
 
-A physical museum-security game built around the **DE1-SoC FPGA board** and its **Nios V / RISC-V processor**. A LEGO minifigure is moved through a 2D laser obstacle course using two independently controlled conveyor axes. The player has to avoid breaking the laser beams, reach a checkpoint that disables the final barrier, and retrieve an "expensive GPU" from the pedestal before the countdown timer expires.
+A physical museum security game built around the **DE1-SoC FPGA board** and its **Nios V / RISC-V processor**. A LEGO minifigure is moved through a 2D laser obstacle course using two independently controlled conveyor axes. The player has to avoid breaking the laser beams, reach a checkpoint that disables the final barrier, and retrieve an "expensive GPU" from the pedestal before the countdown timer expires.
 
-The DE1-SoC is the main controller for the project: it handles game state, timing, sensor events, motor control, and VGA feedback. Arduino Uno boards are used only as supporting hardware interfaces, including analog-to-digital conversion for the photoresistor sensors.
+The DE1-SoC is the main controller for the project. It handles game state, timing, sensor events, motor control, and VGA feedback. Arduino Uno boards are used as supporting hardware interfaces, including analog-to-digital conversion for the photoresistor sensors.
 
 By: **Abby Lui & Christopher Lee**
 
@@ -15,20 +15,19 @@ By: **Abby Lui & Christopher Lee**
 
 ## Project Demo
 
-**Full demo:** [Chris & Abby — Final Project Demo (Google Drive)](https://drive.google.com/file/d/1x_qFAAnGF3lfjsZumd14p-Xw97Y5nBXw/view?usp=drive_link)
+**Full demo:** [Chris & Abby - Final Project Demo (Google Drive)](https://drive.google.com/file/d/1x_qFAAnGF3lfjsZumd14p-Xw97Y5nBXw/view?usp=drive_link)
 
 ---
 
 ## Repository Structure
 
-This public repository is intentionally focused on the **design, architecture, development process, and final prototype**:
+This public repository focuses on the **design, architecture, development process, and final prototype**:
 
-- `README.md` — complete project walkthrough.
-- `assets/title-collage.jpg` — final project / enclosure overview.
-- `assets/high-level-overview.jpg` — original project block diagram and visualization.
-- `assets/physical-movement-collage.jpg` — mechanical design and conveyor development.
-- `assets/hardware-bridge.jpg` — final hardware integration between the enclosure and control electronics.
-- `assets/3d-printing-timelapse.mp4` — web-optimized timelapse of the custom conveyor parts being printed.
+- `README.md` - complete project walkthrough.
+- `assets/title-collage.jpg` - final project and enclosure overview.
+- `assets/physical-movement-collage.jpg` - mechanical design and conveyor development.
+- `assets/hardware-bridge.jpg` - final physical integration between the enclosure and control electronics.
+- `assets/3d-printing-timelapse.mp4` - compressed source video of the custom conveyor parts being printed.
 
 > **Academic Integrity & Licensing**  
 > To comply with academic integrity and plagiarism policies at the University of Toronto, the C source code for this course project will **not** be published in this repository.
@@ -55,15 +54,15 @@ A broken security beam or a timeout immediately transitions the project into a *
 
 At a system level, the project is split into three layers:
 
-1. **Physical game hardware** — enclosure, lasers, sensors, conveyor motors, fans, wiring, and pedestal.
-2. **DE1-SoC control system** — central game state, interrupts, countdown timing, motor control, and PWM.
-3. **VGA feedback** — visual state and status output for the player.
+1. **Physical game hardware** - enclosure, lasers, sensors, conveyor motors, fans, wiring, and pedestal.
+2. **DE1-SoC control system** - central game state, interrupts, countdown timing, motor control, and PWM.
+3. **VGA feedback** - visual state and status output for the player.
 
 <p align="center">
-  <img src="assets/high-level-overview.jpg" alt="Original Museum Break-In project block diagram and visualization" width="900">
+  <img src="https://drive.google.com/uc?export=view&id=1WyUO79SaRhFjK3qlWVmj_kWZiYrpWOk7" alt="Museum Break-In project block diagram and visualization" width="900">
 </p>
 
-The important design choice was keeping the **actual game logic on the DE1-SoC**. The Arduino interface converts analog photoresistor readings into signals the FPGA system can use, but movement, timing, game-state decisions, interrupt handling, and output behaviour remain on the Nios V side.
+A key design choice was keeping the **actual game logic on the DE1-SoC**. The Arduino interface converts analog photoresistor readings into signals the FPGA system can use, but movement, timing, game-state decisions, interrupt handling, and output behaviour remain on the Nios V side.
 
 ---
 
@@ -83,9 +82,11 @@ This mechanical system became one of the defining parts of the project because i
 
 A large part of the movement system depended on custom printed pieces designed around the TT motors and the physical dimensions of the enclosure.
 
-<video src="assets/3d-printing-timelapse.mp4" controls muted loop playsinline width="760"></video>
+<p align="center">
+  <img src="https://drive.google.com/uc?export=view&id=1VyZuZm4UF1DX-TVWQOp3RcdnFG-SjHJp" alt="3D printing timelapse of the custom conveyor parts" width="520">
+</p>
 
-[Open the 3D-printing timelapse directly](assets/3d-printing-timelapse.mp4)
+The animation above is taken directly from the original 3D-printing timelapse used during the build.
 
 ---
 
@@ -112,10 +113,10 @@ The game is intentionally multi-stage instead of being a single "reach the end" 
 
 The final design uses **two IR sensors**:
 
-- **Checkpoint IR sensor** — detects when the player has reached the checkpoint and allows the blocking laser to be disabled.
-- **Pedestal IR sensor** — detects the final artifact pickup / completion condition.
+- **Checkpoint IR sensor** - detects when the player has reached the checkpoint and allows the blocking laser to be disabled.
+- **Pedestal IR sensor** - detects the final artifact pickup and completion condition.
 
-The player therefore has to first survive the initial laser maze, then unlock access to the final region, and finally reach the artifact pedestal before the timer runs out.
+That gives the course a natural progression. The player first has to survive the laser maze, then unlock access to the final region, and finally reach the artifact pedestal before the timer runs out.
 
 ---
 
@@ -145,11 +146,7 @@ Directly switching a motor fully on or off was too abrupt for precise movement, 
 
 To solve that, motor PWM was implemented using a separate interval-timer interrupt. At the end of each PWM cycle, the motor-control logic checks the active movement keys and updates the direction and enable signals for the two motors.
 
-The result is that:
-
-- player movement remains responsive,
-- motor speed can be reduced to a usable level,
-- movement timing is separated from VGA rendering and higher-level game-state work.
+This kept player movement responsive, reduced the motors to a usable speed, and separated movement timing from VGA rendering and higher-level game-state work.
 
 ---
 
@@ -160,7 +157,7 @@ The VGA display acts as the player's software-side view of the game.
 It provides feedback for states such as:
 
 - active gameplay,
-- timer / status information,
+- timer and status information,
 - laser-triggered failure,
 - timeout,
 - successful artifact retrieval.
@@ -202,10 +199,10 @@ Several visual concepts were explored during brainstorming before the final pres
 - VGA output.
 
 <p align="center">
-  <img src="assets/hardware-bridge.jpg" alt="Final physical bridge between the laser enclosure, DE1-SoC, Arduino, power supply, and supporting electronics" width="900">
+  <img src="https://drive.google.com/uc?export=view&id=1mAl3VeobPzfvJRbnApk1cEXA1FTmypoY" alt="Museum Break-In final wiring map" width="900">
 </p>
 
-The final setup makes the boundary between the physical course and the control hardware especially clear: the enclosure contains the moving game and sensors, while the DE1-SoC, Arduino interface, motor driver, power distribution, and supporting wiring sit alongside it.
+The wiring map shows how the DE1-SoC GPIO, motor driver, Arduino interfaces, sensors, lasers, fans, voltage conversion, and power rails were tied together in the physical build.
 
 ---
 
@@ -224,7 +221,13 @@ As more hardware was installed, the enclosure gained:
 - cable routing and power distribution,
 - fans to make the beams more visible inside the enclosure.
 
-The final prototype ended up being much more hardware-heavy than we originally expected, which also made integration and debugging a major part of the project.
+<p align="center">
+  <img src="assets/hardware-bridge.jpg" alt="Final physical bridge between the laser enclosure, DE1-SoC, Arduino, power supply, and supporting electronics" width="900">
+</p>
+
+This photo shows the final physical bridge between the course and its supporting electronics. The enclosure contains the moving game and sensors, while the DE1-SoC, Arduino interface, motor driver, power distribution, and supporting wiring sit alongside it.
+
+The final prototype ended up being much more hardware-heavy than we originally expected, which made integration and debugging a major part of the project.
 
 ---
 
@@ -245,7 +248,7 @@ During integration, issues included:
 
 The first stage of development focused on testing sensors, motors, and the enclosure separately. The later stage was mostly about integrating those systems and finding the boundary between a software bug, an electrical problem, and a mechanical problem.
 
-That integration process was one of the biggest lessons from the project: once software is controlling a real physical system, debugging becomes a full-system engineering problem.
+That integration process was one of the biggest lessons from the project. Once software is controlling a real physical system, debugging becomes a full-system engineering problem.
 
 ---
 
@@ -290,4 +293,4 @@ The final project was the result of repeated scope and integration decisions rat
 
 The Museum Break-In ended up combining **embedded software, FPGA I/O, real-time interrupts, motor control, sensors, 3D-printed mechanisms, physical fabrication, and VGA graphics** into one interactive system.
 
-What began as a laser-security game became a project where the difficult part was getting every layer to work together at the same time. That systems-integration challenge is also what made the project one of the most rewarding parts of ECE243.
+What began as a laser security game became a project where the difficult part was getting every layer to work together at the same time. That systems-integration challenge is also what made the project one of the most rewarding parts of ECE243.
